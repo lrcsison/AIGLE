@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Management - Login</title>
+  
+  <!-- Fonts to match dashboard -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --coffee: rgb(100, 132, 83); 
+      --cream: rgb(239, 215, 118); 
+      --foam: rgb(255, 255, 255); 
+      --shot: rgb(2, 61, 18); 
+      --latte: rgb(182, 143, 107); 
+      --caramel: rgb(210, 166, 121); 
+      --biscotti: rgb(224, 200, 161); 
+      --mocha: rgb(0, 105, 12); 
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--coffee);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: var(--foam);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 380px;
+      border: 2px solid var(--biscotti);
+      text-align: center;
+    }
+
+    .login-container h1 {
+      color: var(--shot);
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 1.6rem;
+    }
+
+    .login-container h2 {
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      color: var(--coffee);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .5rem;
+      font-weight: 500;
+      color: var(--shot);
+    }
+
+    input {
+      width: 100%;
+      padding: .75rem 1rem;
+      border: 1px solid var(--coffee);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: var(--foam);
+      color: var(--shot);
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--coffee);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: var(--coffee);
+      border: none;
+      border-radius: 10px;
+      color: var(--foam);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background: var(--mocha);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .extra {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: .9rem;
+      color: var(--shot);
+    }
+
+    .extra a {
+      color: var(--coffee);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .extra a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      color: #dc2626;
+      font-size: .85rem;
+      margin-top: .25rem;
+    }
+
+    /* Logo on top */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-container img {
+      width: 150px;   
+      height: auto;
+      border-radius: 80%; /* optional */
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- Logo/Image on top -->
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='css/AIgle.png') }}" alt="Aigle Logo" />
+
+
+    </div>
+
+    <h1>Welcome to Aigle</h1>
+    <h2>Login</h2>
+
+    <form id="loginForm" method="POST" action="/api/login">
+      <div id="message" style="margin-top: 1rem; text-align: center;"></div>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <div class="error" id="usernameError"></div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <div class="error" id="passwordError"></div>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <div class="extra">
+      <p><a href="#">Forgot Password?</a></p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

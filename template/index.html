@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/notifications.css">
+  <title>Aigle - Dashboard</title>
+
+  <style>
+    /* ✅ Custom spacing for sections */
+    .usage-lowstk {
+      margin-top: 40px; /* lowers Stocks section */
+    }
+
+    .sales-toprev,
+    .chart-container-sales {
+      margin-top: 40px; /* lowers Sales section */
+    }
+
+    .emp-transac-dlv {
+      margin-top: 40px; /* lowers Deliveries section */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside>
+      <div class="brand-header">
+        <div class="logo"></div>
+        <h1>Aigle</h1>
+      </div>
+      <hr />
+      <ul>
+        <li class="active">
+          <a href="{{ url_for('dashboard') }}">
+            <span class="material-icons">dashboard</span>Dashboard
+          </a>
+        </li>
+        <li><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span>Inventory</a></li>
+        <li><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span>Transactions</a></li>
+  {% if session.get('user_position', 'User')|lower == 'admin' %}
+  <li><a href="{{ url_for('employees') }}"><span class="material-icons">group</span>Employees</a></li>
+  <li><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span>Analytics</a></li>
+  {% endif %}
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="content-area">
+      <!-- Top Nav -->
+      <div class="top-nav">
+        <div><h2>Dashboard</h2></div>
+        <ul class="rp-nav">
+          <li class="search-container">
+            <input type="text" placeholder="Search..." />
+            <span class="material-icons">search</span>
+          </li>
+    <li><a href="{{ url_for('faq_page') }}" title="FAQ"><span class="material-icons">help_outline</span></a></li>
+          <li><span class="material-icons" id="notifications-bell">notifications</span></li>
+          {% include 'components/profile.html' %}
+        </ul>
+        {% include 'components/notifications.html' %}
+      </div>
+
+      <main>
+        <div class="main-wrapper">
+
+          <!-- 🟢 INVENTORY SECTION -->
+          <h2>Inventory</h2>
+          <div class="top-main">
+            <!-- Cards (left) -->
+            <div class="info-4-cards">
+              <div class="card-info">
+                <div class="card-header">
+                  <h4>TOTAL ITEMS</h4>
+                  <span class="material-symbols-outlined top-icon">package_2</span>
+                </div>
+                <h1 id="totalItems"></h1>
+                <h6><span class="material-symbols-outlined">trending_up</span> since last month</h6>
+              </div>
+
+              <div class="card-info">
+                <div class="card-header">
+                  <h4>LOW STOCK</h4>
+                  <span class="material-symbols-outlined top-icon warning-icon">inventory_2</span>
+                </div>
+                <h1 id="lowStock">0</h1>
+                <h6><span class="material-symbols-outlined">priority_high</span> needs reorder soon</h6>
+              </div>
+
+              <div class="card-info">
+                <div class="card-header">
+                  <h4>OUT OF STOCK</h4>
+                  <span class="material-symbols-outlined top-icon danger-icon">cancel</span>
+                </div>
+                <h1 id="outofStock">0</h1>
+                <h6><span class="material-symbols-outlined">report</span> critical shortage</h6>
+              </div>
+
+              <div class="card-info">
+                <div class="card-header">
+                  <h4>EXPIRING SOON</h4>
+                  <span class="material-symbols-outlined top-icon warning-icon">schedule</span>
+                </div>
+                <h1 id="expiringSoon">0</h1>
+                <h6><span class="material-symbols-outlined">hourglass_top</span> within 30 days</h6>
+              </div>
+            </div>
+
+            <!-- Inventory Table (right) -->
+            <div class="info-table" style="flex:1;">
+              <div class="info-tbl-addons">
+                <h3>Inventory Table</h3>
+                <div>
+                  <label for="asStatus">Type:</label>
+                  <select id="asStatus">
+                    <option value="all">All</option>
+                    <option value="low_stock">Low Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="expired">Expired</option>
+                  </select>
+                </div>
+              </div>
+              <div id="invTable-wrapper">
+                <table class="info-main" id="invTable">
+                  <thead>
+                    <tr>
+                      <th>Item Name</th>
+                      <th>Qty</th>
+                      <th>Batch Number</th>
+                      <th>Storage Location</th>
+                      <th>Supplier</th>
+                      <th>Exp. Date</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🟡 STOCKS SECTION -->
+          <h2>Stocks</h2>
+          <div class="usage-lowstk">
+            <div class="chart-container-mid">
+              <h3>Stocks per Week</h3>
+              <canvas id="inventoryLineChart"></canvas>
+            </div>
+            <div class="chart-container-mini">
+              <h3>Stock Distribution</h3>
+              <canvas id="inventoryDonutChart"></canvas>
+            </div>
+          </div>
+
+          <!-- 🟠 SALES SECTION -->
+          <h2>Sales</h2>
+          <div class="sales-toprev">
+            <div class="chart-container">
+              <h3>Mostly Sold Items</h3>
+              <canvas id="inventoryBarChart"></canvas>
+            </div>
+            <div class="info-table">
+              <div class="info-tbl-addons"><h3>Top Sales</h3></div>
+              <div class="scrollable-table-wrapper" id="topSalesTable-wrapper">
+                <table class="info-main" id="topSalesTable">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Units Sold</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container-sales">
+            <div class="chart-header" style="display:flex;justify-content:space-between;align-items:center;">
+              <h3 id="salesChartTitle">Overall Sales per Week</h3>
+              <div class="timeframe-selector">
+                <label for="timeframe">View:</label>
+                <select id="timeframe">
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="salesLineChart"></canvas>
+          </div>
+
+          <!-- 🔵 DELIVERIES SECTION -->
+          <h2>Deliveries</h2>
+          <div class="emp-transac-dlv">
+            <div class="info-tbl-addons"><h3>Pending Deliveries</h3></div>
+            <div class="scrollable-table-wrapper" id="deliveriesTable-wrapper">
+              <table class="info-main" id="deliveriesTable">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Supplier</th>
+                    <th>Product</th>
+                    <th>Qty.</th>
+                    <th>EST</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer>
+        <div class="ft-lp-cp">
+          <p>Copyright &copy; 2025 Aigle Systems. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="/static/js/notifications.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://kit.fontawesome.com/ff1f9759c4.js" crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cardsinfo.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pendeliveries.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/topsales.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/employees.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/transactions.js') }}"></script>
+
+  <script>
+    /* Highlight matching rows on search */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.search-container input').forEach(input => {
+        input.addEventListener('input', () => {
+          const searchTerm = input.value.toLowerCase();
+          document.querySelectorAll('table.info-main tbody tr').forEach(row => {
+            const rowText = Array.from(row.querySelectorAll('td'))
+              .map(td => td.textContent.toLowerCase())
+              .join(' ');
+            row.style.backgroundColor = rowText.includes(searchTerm) ? '#ffff99' : '';
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

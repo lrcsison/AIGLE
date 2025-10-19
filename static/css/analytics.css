@@ -1,0 +1,240 @@
+/* Scope everything to the Analytics page */
+.analytics-page {
+  /* inherit site's font and avoid creating a separate 'panel' look */
+  font-family: inherit;
+  color: var(--text-primary, #333);
+  background: transparent;
+  padding: 0;
+}
+
+/* Filters section */
+.analytics-page .filters {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.analytics-page .filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-page .filter-item label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--text-secondary, #666);
+}
+
+.analytics-page .filter-item select,
+.analytics-page .filter-item button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.analytics-page .filter-item button.btn {
+  background: var(--primary, #2e7d32);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.analytics-page .filter-item button.btn:hover {
+  background: var(--primary-dark, #256428);
+}
+
+/* Grid layout for cards */
+.analytics-page .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Card styling */
+.analytics-page .card {
+  background: var(--foam, #fff);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-page .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Card header */
+.analytics-page .card-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Card body tables */
+.analytics-page .card-body table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.analytics-page .card-body th,
+.analytics-page .card-body td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.analytics-page .card-body th {
+  background-color: var(--coffee, #4caf50);
+  color: var(--foam, #fff);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Remove card-like appearance for analytics tables and make them full-width like transactions page */
+.analytics-page .info-table {
+  /* card-like container for analytics sections */
+  background: var(--foam, #fff);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  overflow: hidden; /* ensure inner content (tables) doesn't bleed outside the card */
+}
+
+.analytics-page .info-tbl-addons {
+  padding: 0 0 8px 0;
+  margin-bottom: 8px;
+}
+
+.analytics-page .transactions-table-wrapper {
+  /* contain the table inside the card and enable internal scrolling */
+  max-height: 340px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  background: transparent;
+  padding: 0;
+}
+
+.analytics-page .transactions-table-wrapper table.info-main {
+  background: transparent; /* table's white background provided by card */
+  box-shadow: none;
+}
+
+/* Table row hover */
+.analytics-page .card-body tbody tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+.analytics-page .card-body tbody tr:hover {
+  background-color: #e0f7e9;
+}
+
+/* Status badges */
+.analytics-page .status-badge {
+  display: inline-block;
+  background-color: #28a745;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Status specific colors */
+.analytics-page .status-badge.status-adequate { background-color: #28a745; color: #fff; } /* green */
+.analytics-page .status-badge.status-overstock { background-color: #d32f2f; color: #fff; } /* red */
+.analytics-page .status-badge.status-low { background-color: #ff9800; color: #000; } /* orange */
+.analytics-page .status-badge.status-out-of-stock { background-color: #8b0000; color: #fff; } /* dark red */
+.analytics-page .status-badge.status-expiring { background-color: #ffb300; color: #000; } /* amber */
+.analytics-page .status-badge.status-unknown { background-color: #6c757d; color: #fff; } /* gray */
+
+/* Period text */
+.analytics-page .period-text {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+/* Make the main content area transparent on analytics to remove the framed white border */
+.analytics-page main {
+  /* restore the site's white main background but keep no outer framing from .analytics-page */
+  background: var(--foam, #fff);
+  padding: 20px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Loading dots animation */
+.analytics-page .loading-dots {
+  text-align: center;
+  font-weight: 500;
+  color: #555;
+  position: relative;
+}
+
+.analytics-page .loading-dots::after {
+  content: "...";
+  display: inline-block;
+  animation: dots 1s steps(3, end) infinite;
+  width: 1ch;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+@keyframes dots {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
+
+/* Alerts */
+.analytics-page .alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.analytics-page .alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Smooth scroll for card tables */
+.analytics-page .card-body {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.analytics-page .card-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.analytics-page .card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.analytics-page .card-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.analytics-page .card-body::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}

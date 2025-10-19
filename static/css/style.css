@@ -1,0 +1,887 @@
+/* ===========================
+   ROOT COLORS
+   =========================== */
+:root {
+  --coffee: rgb(100, 132, 83);
+  --cream: rgb(239, 215, 118);
+  --foam: rgb(255, 255, 255);
+  --shot: rgb(2, 61, 18);
+  --latte: rgb(182, 143, 107);
+  --caramel: rgb(210, 166, 121);
+  --biscotti: rgb(224, 200, 161);
+  --mocha: rgb(0, 105, 12);
+}
+
+/* ===========================
+   GLOBAL
+   =========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: monospace, Arial, sans-serif;
+  background-color: var(--coffee);
+  color: var(--shot);
+  overflow: hidden;
+}
+
+/* ===========================
+   LAYOUT
+   =========================== */
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Sidebar */
+aside {
+  width: 200px;
+  background-color: var(--coffee);
+  color: var(--cream);
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  width: 60px;
+  height: auto;
+}
+
+/* Sidebar Navigation */
+aside ul {
+  list-style: none;
+  padding: 0;
+}
+
+aside ul li {
+  margin-top: 10px;
+}
+
+aside ul li a {
+  text-decoration: none;
+  color: var(--cream);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+aside ul li a:hover,
+aside ul li.active a {
+  background-color: var(--shot);
+  margin-left: 10px;
+}
+
+/* ===========================
+   CONTENT AREA
+   =========================== */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ===========================
+   TOP NAVIGATION (RESTORED)
+   =========================== */
+.top-nav {
+  height: 50px;
+  background-color: var(--foam);
+  color: var(--coffee);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px 0 0 0;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.top-nav .material-icons {
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--coffee);
+  transition: all 0.2s ease-in-out;
+}
+
+.top-nav .material-icons:hover {
+  color: var(--shot);
+  transform: translateY(-1px);
+}
+
+/* Right Panel (Search, Notification, Profile) */
+.rp-nav {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 20px;
+  list-style: none;
+}
+
+/* Search Bar */
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: rgb(236, 236, 236);
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: var(--coffee);
+}
+
+.search-container input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  margin-right: 5px;
+  color: var(--coffee);
+}
+
+/* ✅ Profile Dropdown (click-based, not hover) */
+.dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--coffee);
+}
+
+/* Hide dropdown by default */
+.dropdown-content {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: var(--foam);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 99;
+}
+
+/* Show when active */
+.dropdown.active .dropdown-content {
+  display: flex;
+}
+
+.dropdown-content a {
+  color: var(--coffee);
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--cream);
+}
+
+/* ===========================
+   MAIN CONTENT
+   =========================== */
+main {
+  flex: 1;
+  background-color: #fdfdfd;
+  color: var(--shot);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+main h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: var(--shot);
+}
+
+/* ===========================
+   INVENTORY SECTION
+   =========================== */
+.top-main {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  width: 100%;
+}
+
+.info-4-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.card-info {
+  border: none;
+  border-radius: 15px;
+  background: var(--foam);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info h1 {
+  margin: 5px 0;
+}
+
+.card-info h6 {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Inventory Table */
+.info-table {
+  background: var(--foam);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  overflow: hidden;
+}
+
+.info-tbl-addons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* Inventory table scroll */
+#invTable-wrapper {
+  max-height: 315px;
+  overflow-y: auto;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+}
+
+/* ===========================
+   TABLE DESIGN (RESTORED)
+   =========================== */
+table.info-main {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+table.info-main thead {
+  background-color: var(--coffee);
+  color: var(--foam);
+  text-align: left;
+}
+
+table.info-main th,
+table.info-main td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+table.info-main tbody tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+table.info-main tbody tr:hover {
+  background-color: #ffff99;
+}
+
+.scrollable-table-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-table-wrapper::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 10px;
+}
+
+.scrollable-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--coffee);
+  border-radius: 10px;
+}
+
+/* ===========================
+   STOCKS SECTION
+   =========================== */
+.usage-lowstk {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ===========================
+   SALES SECTION
+   =========================== */
+.sales-toprev {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  width: 100%;
+}
+
+.chart-container-sales {
+  background: var(--foam);
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+/* ===========================
+   DELIVERIES SECTION
+   =========================== */
+.emp-transac-dlv {
+  width: 100%;
+  background: var(--foam);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+footer {
+  background-color: var(--foam);
+  color: var(--shot);
+  border-radius: 0 0 0 20px;
+  padding: 0 20px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===========================
+   CHART CONTAINERS (FIX)
+   =========================== */
+.chart-container,
+.chart-container-mid,
+.chart-container-mini,
+.chart-container-sales {
+  width: 100%;
+  max-width: 100%;
+  height: 400px;
+  max-height: 400px;
+  overflow: hidden;
+  background: var(--foam);
+  border-radius: 15px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.chart-container canvas,
+.chart-container-mid canvas,
+.chart-container-mini canvas,
+.chart-container-sales canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* ===========================
+   RESPONSIVENESS
+   =========================== */
+@media (max-width: 1200px) {
+  .top-main,
+  .usage-lowstk,
+  .sales-toprev {
+    grid-template-columns: 1fr;
+  }
+
+  .info-4-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .chart-container,
+  .chart-container-mid,
+  .chart-container-mini,
+  .chart-container-sales {
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  aside {
+    display: none;
+  }
+
+  .info-4-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container,
+  .chart-container-mid,
+  .chart-container-mini,
+  .chart-container-sales {
+    height: 300px;
+  }
+
+  .top-main,
+  .usage-lowstk,
+  .sales-toprev {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 10px;
+  }
+
+  .chart-container,
+  .chart-container-mid,
+  .chart-container-mini,
+  .chart-container-sales {
+    height: 250px;
+  }
+
+  .info-4-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================
+   SECTION SPACING ADJUSTMENTS
+   ================================ */
+
+/* 🟡 STOCKS SECTION */
+.usage-lowstk {
+  margin-top: 40px; /* Moves Stocks section lower */
+}
+
+/* 🟠 SALES SECTION */
+.sales-toprev,
+.chart-container-sales {
+  margin-top: 40px; /* Adds spacing before Sales section */
+}
+
+/* Optional: adjust <h2> section titles for cleaner spacing */
+main h2 {
+  margin-top: 60px;
+  margin-bottom: 15px;
+}
+
+/* Optional: responsive fine-tuning */
+@media (max-width: 768px) {
+  .usage-lowstk,
+  .sales-toprev,
+  .chart-container-sales,
+  .emp-transac-dlv {
+    margin-top: 25px; /* slightly smaller spacing on mobile */
+  }
+
+  main h2 {
+    margin-top: 40px;
+  }
+}
+
+/* ================================
+   CUSTOM CHART HEIGHT ADJUSTMENTS
+   ================================ */
+
+/* 🟠 SALES SECTION CHARTS */
+
+/* Make "Mostly Sold Items" chart taller */
+.chart-container {
+  height: 500px !important;
+  max-height: 500px !important;
+}
+
+/* Make "Top Sales" table shorter */
+  .sales-toprev .info-table {
+    height: 500px !important;      /* same as .chart-container height */
+    max-height: 500px !important;  /* ensures equal alignment */
+    overflow-y: auto;              /* allows scrolling if table gets long */
+  }
+
+
+/* 🟣 OVERALL SALES PER WEEK CHART (taller) */
+.chart-container-sales {
+  height: 600px !important;
+  max-height: 600px !important;
+}
+
+/* Ensure canvases stretch properly inside charts */
+.chart-container canvas,
+.chart-container-sales canvas {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Responsive fine-tuning */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 400px !important;
+  }
+
+  .chart-container-sales {
+    height: 450px !important;
+  }
+
+}
+
+/* ================================
+   FIX: Chart text too close to borders
+   ================================ */
+
+/* Add more breathing room inside chart boxes */
+.chart-container,
+.chart-container-mid,
+.chart-container-mini,
+.chart-container-sales {
+  padding: 25px 25px 40px 25px; /* bottom padding increased */
+  box-sizing: border-box;
+}
+
+/* Optional: make sure Chart.js canvas doesn't stretch edge-to-edge */
+.chart-container canvas,
+.chart-container-mid canvas,
+.chart-container-mini canvas,
+.chart-container-sales canvas {
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   TABLE DROPDOWN (3 DOTS)
+   =========================== */
+.table-dropdown {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.more-options {
+  font-size: 24px;
+  color: var(--coffee);
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.more-options:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.table-dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: var(--foam);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  min-width: 150px;
+  overflow: hidden;
+  z-index: 200;
+}
+
+.table-dropdown-menu.show {
+  display: flex;
+}
+
+.table-dropdown-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--coffee);
+  font-size: 14px;
+}
+
+.table-dropdown-menu .dropdown-item:hover {
+  background-color: var(--cream);
+}
+
+
+/* === Modal Styling === */
+/* ✅ Compact & scrollable Add Item modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: var(--foam);
+  padding: 22px 26px; /* standard padding; actions are in flow */
+  border-radius: 14px;
+  box-shadow: 0 18px 60px rgba(17, 24, 39, 0.25);
+  width: 480px;
+  max-width: 93%;
+  max-height: 86vh;               /* limits overall height */
+  overflow: hidden;               /* child .modal-body will scroll */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateY(0);
+  animation: fadeIn 0.26s cubic-bezier(.2,.9,.2,1);
+}
+
+.modal-body {
+  flex: 1 1 auto;               /* take available space in modal */
+  overflow-y: auto;             /* scrolling container */
+  padding-right: 6px;           /* avoid scrollbar overlaying inputs */
+  padding-bottom: 8px;          /* small spacing before actions */
+}
+
+/* Constrain the main content inside the modal to a readable column */
+.modal-inner {
+  width: 100%;
+  max-width: 350px;    /* narrower content column for better readability */
+  margin: 0 auto;      /* center inside modal */
+  display: block;
+}
+
+.modal-body .form-row {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.modal-body input, .modal-body select, .modal-body textarea {
+  max-width: 100%;
+}
+
+.modal-content h3 {
+  text-align: center;
+  margin-bottom: 5px;
+  color: var(--coffee);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.modal-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.modal-header h3 { margin: 0; }
+
+.modal-content label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  color: var(--coffee);
+}
+
+.modal-content input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.modal-body label { display:block; margin-top:12px; margin-bottom:6px; }
+.modal-body input, .modal-body select, .modal-body textarea { width:100%; box-sizing:border-box; }
+.modal-body { padding-right: 6px; }
+
+/* custom scrollbar for modal body */
+.modal-body::-webkit-scrollbar { width: 8px; }
+.modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+.modal-body::-webkit-scrollbar-thumb { background: rgba(100,132,83,0.4); border-radius: 8px; }
+
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative; /* part of modal flow now */
+  background: var(--foam);
+  padding: 12px 20px;
+  min-height: 56px;
+  z-index: 6;
+  box-shadow: 0 -6px 18px rgba(17,24,39,0.06);
+  border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+.btn-green, .btn-red {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-green {
+  background: linear-gradient(180deg,#4caf50,#2e7d32);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(46,125,50,0.18);
+}
+.btn-green:hover { transform: translateY(-2px); }
+.btn-red { background: linear-gradient(180deg,#f44336,#d32f2f); color:#fff; box-shadow: 0 6px 18px rgba(244,67,54,0.14); }
+.btn-red:hover { transform: translateY(-2px); }
+
+@media (max-width: 600px) {
+  .modal-content { width: 92%; padding: 18px 16px; }
+  .modal-actions { padding: 10px 14px; }
+}
+
+.btn-green {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-green:hover {
+  background-color: #43a047;
+}
+
+.btn-red {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-red:hover {
+  background-color: #d32f2f;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ===========================
+   FIX: Sticky Table Header (Green Bar)
+   =========================== */
+
+/* ✅ Scrollable table wrapper */
+.table-scroll {
+  max-height: 80vh; /* control how tall the scroll area is */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  position: relative;
+}
+
+/* ✅ Table base */
+.info-main {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--foam);
+  position: relative;
+}
+
+/* ✅ Header cells stay fixed while scrolling */
+.info-main thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--coffee);
+  color: var(--foam);
+  z-index: 5;
+  text-align: left;
+  padding: 10px 15px;
+  font-weight: 600;
+}
+
+/* ✅ Row styling */
+.info-main th,
+.info-main td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.info-main tbody tr:hover {
+  background-color: rgba(100, 132, 83, 0.12);
+  cursor: pointer;
+}
+
+/* ✅ Subtle divider shadow under sticky header */
+.info-main thead::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+}
+
+/* ===========================
+   EDIT MODE VISUALIZATION
+   =========================== */
+
+/* ✅ Green header with glow in edit mode */
+table.info-main[data-mode="edit"] thead {
+  background-color: var(--mocha);
+  box-shadow: 0 4px 10px rgba(0, 128, 0, 0.3);
+  height: 60px; /* extended height */
+  transition: all 0.3s ease-in-out;
+}
+
+/* ✅ Add "Opt." label to left of header */
+table.info-main[data-mode="edit"] thead::before {
+  content: "Opt.";
+  position: absolute;
+  left: 20px;
+  top: 18px;
+  font-weight: bold;
+  color: var(--foam);
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+/* ✅ Smooth return to normal when exiting edit mode */
+table.info-main[data-mode="view"] thead {
+  height: 40px;
+  background-color: var(--coffee);
+  box-shadow: none;
+  transition: all 0.3s ease-in-out;
+}

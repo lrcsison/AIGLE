@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/notifications.css"/>
+  <title>Aigle - Employees</title>
+</head>
+
+<body>
+<div class="layout">
+    <!-- Side Navigation Bar -->
+    <aside>
+        <div class="brand-header"><div class="logo"></div><h1>Aigle</h1></div>
+        <hr/>
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}"><span class="material-icons">dashboard</span>Dashboard</a></li>
+            <li><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span>Inventory</a></li>
+            <li><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span>Transactions</a></li>
+            <li class="active"><a href="{{ url_for('employees') }}"><span class="material-icons">group</span>Employees</a></li>
+            <li><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span>Analytics</a></li>
+        </ul>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <!-- Top Navigation Bar -->
+        <div class="top-nav">
+            <div><h2>Employees</h2></div>
+            <ul class="rp-nav">
+                <li class="search-container">
+                    <input type="text" placeholder="Search..."/>
+                    <span class="material-icons">search</span>
+                </li>
+                <li><a href="{{ url_for('faq_page') }}" title="FAQ"><span class="material-icons">help_outline</span></a></li>
+                <li><span class="material-icons" id="notifications-bell">notifications</span></li>
+                {% include 'components/profile.html' %}
+            </ul>
+        </div>
+
+        {% include 'components/notifications.html' %}
+
+        <!-- Main Content -->
+        <main>
+            <div class="main-wrapper">
+                <div class="info-table">
+                    <div class="info-tbl-addons">
+                        <h3>Employees</h3>
+                        <div>
+                            <label for="empStatus">Status:</label>
+                            <select id="empStatus">
+                                <option value="all">All</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="info-main" id="empPerfTable">
+                            <thead>
+                                <tr>
+                                    <th data-type="string">Name</th>
+                                    <th data-type="string">Position</th>
+                                    <th data-type="string">Contact</th>
+                                    <th data-type="string">Address</th>
+                                    <th data-type="string">Status</th>
+                                    <th data-type="string">Remarks</th>
+                                    <th data-type="number">Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS will populate rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script type="module" src="/static/js/notifications.js"></script>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/employees.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Search highlight
+    document.querySelectorAll('.search-container input').forEach(input => {
+        input.addEventListener('input', () => {
+            const term = input.value.toLowerCase();
+            document.querySelectorAll('#empPerfTable tbody tr').forEach(row => {
+                const text = Array.from(row.querySelectorAll('td')).map(td => td.textContent.toLowerCase()).join(' ');
+                row.classList.toggle('highlighted', text.includes(term));
+            });
+        });
+    });
+
+    // Make table sortable
+    const table = document.getElementById("empPerfTable");
+    table.querySelectorAll("thead th").forEach((th, idx) => {
+        th.style.cursor = "pointer";
+        th.addEventListener("click", () => {
+            let dir = "asc";
+            if (table._sortState && table._sortState.col === idx) {
+                dir = table._sortState.dir === "asc" ? "desc" : "asc";
+            }
+            sortTable(table, idx, dir);
+            table._sortState = {col: idx, dir};
+            updateSortIndicators(table, idx, dir);
+        });
+    });
+});
+
+function sortTable(table, colIdx, dir) {
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows);
+    const type = table.tHead.rows[0].cells[colIdx].dataset.type;
+
+    rows.sort((a, b) => {
+        let aText = a.cells[colIdx].textContent.trim();
+        let bText = b.cells[colIdx].textContent.trim();
+
+        if (type === "number") { aText = parseFloat(aText); bText = parseFloat(bText); }
+        else if (type === "date") { aText = new Date(aText); bText = new Date(bText); }
+
+        if (aText < bText) return dir === "asc" ? -1 : 1;
+        if (aText > bText) return dir === "asc" ? 1 : -1;
+        return 0;
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+function updateSortIndicators(table, colIdx, dir) {
+    table.querySelectorAll("thead th").forEach((th, idx) => {
+        th.textContent = th.textContent.replace(/\s*[▲▼]$/, "");
+        if (idx === colIdx) th.textContent += dir === "asc" ? " ▲" : " ▼";
+    });
+}
+</script>
+</body>
+</html>

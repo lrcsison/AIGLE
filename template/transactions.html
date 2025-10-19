@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="/static/css/notifications.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <title>Aigle - Transactions</title>
+
+  <style>
+    /* Make table header sticky */
+    .transactions-table-wrapper {
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 8px;
+    }
+
+    table.info-main {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--foam);
+    }
+
+    table.info-main th,
+    table.info-main td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table.info-main thead th {
+      position: sticky;
+      top: 0;
+      background-color: var(--coffee);
+      color: var(--foam);
+      z-index: 2;
+    }
+
+    table.info-main tbody tr:nth-child(even) {
+      background-color: #f7f7f7;
+    }
+
+    table.info-main tbody tr:hover {
+      background-color: #ffffcc;
+    }
+  </style>
+</head>
+
+<body>
+<div class="layout">
+  <!-- Side Navigation Bar -->
+  <aside>
+    <div class="brand-header"><div class="logo"></div><h1>Aigle</h1></div>
+    <hr/>
+    <ul>
+      <li><a href="{{ url_for('dashboard') }}"><span class="material-icons">dashboard</span>Dashboard</a></li>
+      <li><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span>Inventory</a></li>
+  <li class="active"><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span>Transactions</a></li>
+  {% if session.get('user_position', 'User')|lower == 'admin' %}
+  <li><a href="{{ url_for('employees') }}"><span class="material-icons">group</span>Employees</a></li>
+  <li><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span>Analytics</a></li>
+  {% endif %}
+    </ul>
+  </aside>
+
+  <div class="content-area">
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+      <div><h2>Transactions</h2></div>
+      <ul class="rp-nav">
+        <li class="search-container">
+          <input type="text" placeholder="Search..."/>
+          <span class="material-icons">search</span>
+        </li>
+  <li><a href="{{ url_for('faq_page') }}" title="FAQ"><span class="material-icons">help_outline</span></a></li>
+        <li>
+          <span class="material-icons" id="notifications-bell">notifications</span>
+        </li>
+        {% include 'components/profile.html' %}
+      </ul>
+    </div>
+
+    <!-- Notifications panel -->
+    <div id="notifications-panel" class="notifications-panel">
+      <div class="notifications-header">
+        <h3>Notifications</h3>
+        <span id="close-notifications" class="material-icons">close</span>
+      </div>
+      <div id="notifications-list" class="notifications-list"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+      <div class="main-wrapper">
+        <div class="info-table">
+          <div class="info-tbl-addons">
+            <h3>Transactions</h3>
+            <div>
+              <label for="asType">Type:</label>
+              <select id="asType">
+                <option value="all">All</option>
+                <option value="in">In</option>
+                <option value="out">Out</option>
+                <option value="adjustment">Adjustment</option>
+              </select>
+            </div>
+          </div>
+          <div class="transactions-table-wrapper">
+            <table class="info-main" id="transactionsTable">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Item Name</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>T.Date</th>
+                  <th>Total</th>
+                  <th>Employee</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script type="module" src="/static/js/notifications.js"></script>
+<script src="{{ url_for('static', filename='js/transactions.js') }}"></script>
+<script src="https://kit.fontawesome.com/ff1f9759c4.js" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+    // Search functionality
+    document.querySelectorAll('.search-container input').forEach(input => {
+        input.addEventListener('input', () => {
+            const searchTerm = input.value.toLowerCase();
+            document.querySelectorAll('table.info-main tbody tr').forEach(row => {
+                const rowText = Array.from(row.querySelectorAll('td'))
+                    .map(td => td.textContent.toLowerCase())
+                    .join(' ');
+                row.style.backgroundColor = rowText.includes(searchTerm) ? '#ffff99' : '';
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>

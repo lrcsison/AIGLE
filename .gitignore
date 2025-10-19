@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+.env
+.env.*
+
+# Flask stuff
+instance/
+*.db
+*.sqlite3
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (in case)
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
+
+# Secrets
+secrets/
+
+# IDE files
+*.iml
+
+# zip/junk
+*.zip
+
+# mac artifact
+._*

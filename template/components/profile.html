@@ -1,0 +1,34 @@
+<li class="dropdown" id="profDropdown">
+  <a href="#">
+    <span class="material-icons avatar">account_circle</span>
+    <span>
+      <h5>{{ session.get('user_name') or 'Guest' }}</h5>
+      <h6>{{ session.get('user_position') or 'User' }}</h6>
+    </span>
+  </a>
+  <div class="dropdown-content">
+    <a href="/logout">Logout</a>
+  </div>
+</li>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdown = document.querySelector('.dropdown');
+
+  if (dropdown) {
+    // Toggle menu on click
+    dropdown.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent click from bubbling
+      dropdown.classList.toggle('active');
+    });
+
+    // Close if clicked outside
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
+  }
+});
+</script>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aigle - Analytics</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}"/>
+  <link rel="stylesheet" href="/static/css/notifications.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="layout analytics-page">
+  <!-- Side Navigation Bar -->
+  <aside>
+    <div class="brand-header">
+      <div class="logo"></div>
+      <h1>Aigle</h1>
+    </div>
+    <hr />
+    <ul>
+      <li><a href="{{ url_for('dashboard') }}"><span class="material-icons">dashboard</span> Dashboard</a></li>
+      <li><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span> Inventory</a></li>
+      <li><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span> Transactions</a></li>
+  {% if session.get('user_position', 'User')|lower == 'admin' %}
+  <li><a href="{{ url_for('employees') }}"><span class="material-icons">group</span> Employees</a></li>
+  <li class="active"><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span> Analytics</a></li>
+  {% endif %}
+    </ul>
+  </aside>
+
+  <!-- Content Area -->
+  <div class="content-area">
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+      <div><h2>Analytics</h2></div>
+      <ul class="rp-nav">
+        <li class="search-container">
+          <input type="text" placeholder="Search..."/>
+          <span class="material-icons">search</span>
+        </li>
+  <li><a href="{{ url_for('faq_page') }}" title="FAQ"><span class="material-icons">help_outline</span></a></li>
+        <li><span class="material-icons" id="notifications-bell">notifications</span></li>
+        {% include 'components/profile.html' %}
+      </ul>
+    </div>
+
+    {% include 'components/notifications.html' %}
+
+    <!-- Main Content -->
+    <main>
+      <div class="main-wrapper">
+        <h2>Medicine Analytics Dashboard</h2>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-item">
+            <label for="period">Analysis Period</label>
+            <select id="period" onchange="updateFilterOptions()">
+              <option value="quarterly" selected>Quarterly</option>
+              <option value="yearly">Yearly</option>
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="year">Year</label>
+            <select id="year">
+              <option value="2024">2024</option>
+              <option value="2025" selected>2025</option>
+            </select>
+          </div>
+          <div class="filter-item" id="periodSelectorCol">
+            <label id="periodSelectorLabel" for="periodSelector">Quarter</label>
+            <select id="periodSelector"></select>
+          </div>
+          <div class="filter-item">
+            <label for="analyze" style="visibility: hidden;">Analyze</label>
+            <button id="analyze" class="btn" onclick="updateAnalytics()">Analyze</button>
+          </div>
+        </div>
+
+        <!-- Usage Tables -->
+        <div class="grid-2">
+          <div class="info-table">
+            <div class="info-tbl-addons"><h3>Most Used Medicines</h3></div>
+            <div class="transactions-table-wrapper">
+              <table class="info-main">
+                <thead><tr><th>Medicine</th><th>Net Usage</th></tr></thead>
+                <tbody id="most-used-body">
+                  <tr><td colspan="2"><span class="loading-dots" id="loading-usage">Loading</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="info-table">
+            <div class="info-tbl-addons"><h3>Least Used Medicines</h3></div>
+            <div class="transactions-table-wrapper">
+              <table class="info-main">
+                <thead><tr><th>Medicine</th><th>Net Usage</th></tr></thead>
+                <tbody id="least-used-body">
+                  <tr><td colspan="2"><span class="loading-dots">Loading</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="info-table">
+          <div class="info-tbl-addons flex-between">
+            <h3>Stock Recommendations</h3>
+            <span class="period-text">Analysis for {{ current_quarter }} {{ current_year }}</span>
+          </div>
+          <div class="transactions-table-wrapper">
+            <table class="info-main">
+              <thead>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Current Stock</th>
+                  <th>Forecast Usage</th>
+                  <th>Recommendation</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recommendations-body">
+                <tr><td colspan="5"><span class="loading-dots" id="loading-recommendations">Loading</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script type="module" src="/static/js/notifications.js"></script>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script src="https://kit.fontawesome.com/ff1f9759c4.js" crossorigin="anonymous"></script>
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.search-container input').forEach(input => {
+    input.addEventListener('input', () => {
+      const searchTerm = input.value.toLowerCase();
+      document.querySelectorAll('table tbody tr').forEach(row => {
+        const rowText = Array.from(row.querySelectorAll('td'))
+          .map(td => td.textContent.toLowerCase())
+          .join(' ');
+        row.style.backgroundColor = rowText.includes(searchTerm) ? '#ffff99' : '';
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>

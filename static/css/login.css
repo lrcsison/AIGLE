@@ -1,0 +1,97 @@
+body {
+  background: var(--cream); /* yellow background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: monospace, Arial, sans-serif;
+}
+
+.login-container {
+  background: #f8f9f0; /* light green-ish neutral */
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 380px;
+  border: 2px solid var(--coffee); /* medium green border */
+}
+
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: var(--coffee); /* medium green text */
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 500;
+  color: var(--shot); /* dark green text */
+}
+
+input {
+  width: 100%;
+  padding: .75rem 1rem;
+  border: 1px solid #d9d9d0; /* light green border */
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #f8f9f0; /* light green-ish */
+  color: var(--shot);
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: var(--coffee);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(100, 132, 83, 0.2); /* coffee green focus */
+}
+
+.btn {
+  width: 100%;
+  padding: .75rem 1rem;
+  background: var(--coffee);
+  border: none;
+  border-radius: 10px;
+  color: var(--cream); /* yellow text */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background: var(--shot); /* dark green hover */
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.extra {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: .9rem;
+  color: var(--shot);
+}
+
+.extra a {
+  color: var(--coffee);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.extra a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: #dc2626;
+  font-size: .85rem;
+  margin-top: .25rem;
+}

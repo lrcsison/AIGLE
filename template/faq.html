@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/faq.css') }}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <title>Aigle - FAQ</title>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand-header"><div class="logo"></div><h1>Aigle</h1></div>
+      <hr />
+      <ul>
+        <li><a href="{{ url_for('dashboard') }}"><span class="material-icons">dashboard</span>Dashboard</a></li>
+        <li><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span>Inventory</a></li>
+        <li><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span>Transactions</a></li>
+        {% if session.get('user_position', 'User')|lower == 'admin' %}
+        <li><a href="{{ url_for('employees') }}"><span class="material-icons">group</span>Employees</a></li>
+        <li><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span>Analytics</a></li>
+        {% endif %}
+      </ul>
+    </aside>
+
+    <div class="content-area">
+      <div class="top-nav">
+        <div><h2>FAQ</h2></div>
+        <ul class="rp-nav">
+          <li class="search-container">
+            <input type="text" placeholder="Search..." />
+            <span class="material-icons">search</span>
+          </li>
+          <li><span class="material-icons" id="notifications-bell">notifications</span></li>
+          {% include 'components/profile.html' %}
+        </ul>
+      </div>
+
+      <main>
+        <div class="main-wrapper">
+          <div class="faq-hero">
+            <h1>Frequently Asked Questions</h1>
+            <p>Find quick answers about Aigle — usage, backups, and technical notes.</p>
+          </div>
+
+          <div class="faq-container">
+            <div class="faq-item">
+              <button class="faq-q">About Aigle <span class="chev">▸</span></button>
+              <div class="faq-a">
+                <p>Aigle is a lightweight inventory and analytics system for managing medicines, transactions, and deliveries. It uses a Flask backend with Jinja templates and a simple client-side JS layer for interactive tables and charts.</p>
+                <ul>
+                  <li>Backend: Flask (Python)</li>
+                  <li>Templates: Jinja2 (`template/`)</li>
+                  <li>Static assets: `static/` (CSS, JS, images)</li>
+                  <li>Styles: `static/css/style.css` + page styles like `analytics.css`</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q">How to use <span class="chev">▸</span></button>
+              <div class="faq-a">
+                <ol>
+                  <li>Login with your account.</li>
+                  <li>Use the sidebar to navigate between Dashboard, Inventory, and Transactions.</li>
+                  <li>Admins can access Employees and Analytics pages.</li>
+                  <li>Use the search box in the top-right to highlight rows in tables.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q">How do I backup data? <span class="chev">▸</span></button>
+              <div class="faq-a">
+                <p>To backup your data, download the database file here: <a href="/static/db_backup/backup.zip">/link</a></p>
+                <p>Alternatively, export via the admin panel (if available) or run your database dump tools directly against the database file.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q">Technical Notes <span class="chev">▸</span></button>
+              <div class="faq-a">
+                <p>Routes are defined in blueprints located in the `routes/` directory. Static files are served from `static/`. If you need to change the port, edit `app.py`.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/notifications.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.faq-q').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.faq-item');
+          const a = btn.nextElementSibling;
+          const showing = a.classList.toggle('show');
+          item.classList.toggle('active', showing);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

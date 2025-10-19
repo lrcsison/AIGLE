@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <link rel="stylesheet" href="/static/css/notifications.css">
+  <title>Aigle - Inventory</title>
+
+  <style>
+    /* Sticky green header bar */
+    .sticky-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      color: rgb(0, 0, 0);
+      padding: 10px 15px;
+      border-radius: 10px 10px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    /* Buttons */
+    .btn-red {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-green {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    /* Dropdown */
+    .table-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .table-dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      background-color: var(--foam);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      flex-direction: column;
+      min-width: 160px;
+      z-index: 99;
+    }
+    .table-dropdown-menu button {
+      background: none;
+      border: none;
+      padding: 10px 15px;
+      text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--coffee);
+      cursor: pointer;
+    }
+    .table-dropdown-menu button:hover {
+      background-color: var(--cream);
+    }
+    .table-dropdown.active .table-dropdown-menu {
+      display: flex;
+    }
+
+    /* Table styling */
+    .info-main {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--foam);
+    }
+    .info-main th, .info-main td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    .info-main thead th {
+      position: sticky;
+      top: 0;
+      background-color: var(--coffee);
+      color: var(--foam);
+      z-index: 2;
+      cursor: pointer;
+    }
+    .info-main tbody tr:nth-child(even) {
+      background-color: #f7f7f7;
+    }
+    .info-main tbody tr:hover {
+      background-color: #ffffcc;
+    }
+
+    /* Scroll container for table */
+    .table-scroll {
+      max-height: 77vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand-header"><div class="logo"></div><h1>Aigle</h1></div>
+    <hr/>
+    <ul>
+      <li><a href="{{ url_for('dashboard') }}"><span class="material-icons">dashboard</span>Dashboard</a></li>
+      <li class="active"><a href="{{ url_for('inventory') }}"><span class="material-icons">inventory</span>Inventory</a></li>
+  <li><a href="{{ url_for('transactions') }}"><span class="material-icons">receipt</span>Transactions</a></li>
+  {% if session.get('user_position', 'User')|lower == 'admin' %}
+  <li><a href="{{ url_for('employees') }}"><span class="material-icons">group</span>Employees</a></li>
+  <li><a href="{{ url_for('analytics') }}"><span class="material-icons">bar_chart</span>Analytics</a></li>
+  {% endif %}
+    </ul>
+  </aside>
+
+  <div class="content-area">
+    <div class="top-nav">
+      <div><h2>Inventory</h2></div>
+      <ul class="rp-nav">
+        <li class="search-container">
+          <input type="text" placeholder="Search..."/>
+          <span class="material-icons">search</span>
+        </li>
+  <li><a href="{{ url_for('faq_page') }}" title="FAQ"><span class="material-icons">help_outline</span></a></li>
+        <li><span class="material-icons" id="notifications-bell">notifications</span></li>
+        {% include 'components/profile.html' %}
+      </ul>
+      {% include 'components/notifications.html' %}
+    </div>
+
+    <main>
+      <div class="main-wrapper">
+        <div class="info-table">
+
+          <!-- ✅ Sticky green header -->
+          <div class="sticky-header">
+            <h3>Inventory</h3>
+            <div class="table-dropdown">
+              <span class="material-icons more-options">more_vert</span>
+              <div class="table-dropdown-menu">
+                <button class="dropdown-item add-btn">Add <span class="material-icons">add_circle</span></button>
+                <button class="dropdown-item edit-btn">Edit <span class="material-icons">edit</span></button>
+                <button class="dropdown-item export-btn">Export <span class="material-icons">download</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-scroll">
+            <table class="info-main" id="invTable">
+              <thead>
+                <tr>
+                  <th data-type="string">Item Name</th>
+                  <th data-type="number">Qty</th>
+                  <th data-type="string">Batch Number</th>
+                  <th data-type="string">Storage Location</th>
+                  <th data-type="string">Supplier</th>
+                  <th data-type="date">Expiry Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add Item Modal -->
+<div id="addItemModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Add Inventory Item</h3>
+    <div class="modal-body">
+      <div class="modal-inner">
+        <div class="form-row"><label>Medicine ID</label><input type="number" id="itemMedicineId" required /></div>
+        <div class="form-row"><label>Name</label><input type="text" id="itemName" required /></div>
+        <div class="form-row"><label>Description</label><input type="text" id="itemDescription" required /></div>
+        <div class="form-row"><label>Lot Number</label><input type="text" id="itemLotNo" required /></div>
+        <div class="form-row"><label>Storage Location</label><input type="text" id="itemLocation" required /></div>
+        <div class="form-row"><label>Unit</label><input type="text" id="itemUnit" required /></div>
+        <div class="form-row"><label>Quantity</label><input type="number" id="itemQty" required /></div>
+        <div class="form-row"><label>Expiry Date</label><input type="date" id="itemExpiry" required /></div>
+        <div class="form-row"><label>Manufacturer ID</label><input type="number" id="itemManufacturerId" /></div>
+        <div class="form-row"><label>Supplier ID</label><input type="number" id="itemSupplierId" /></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button id="applyAdd" class="btn-green">Apply</button>
+      <button id="cancelAdd" class="btn-red">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script type="module" src="/static/js/notifications.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/InvActions.js') }}"></script>
+
+<script>
+  // ✅ Dropdown toggle
+  document.addEventListener("DOMContentLoaded", () => {
+    const dropdown = document.querySelector(".table-dropdown");
+    if (!dropdown) return;
+    const menu = dropdown.querySelector(".table-dropdown-menu");
+    const toggle = dropdown.querySelector(".more-options");
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("active");
+    });
+
+    menu.addEventListener("click", (e) => e.stopPropagation());
+
+    document.addEventListener("click", (e) => {
+      if (!dropdown.contains(e.target)) dropdown.classList.remove("active");
+    });
+
+    // ✅ Table sorting
+    const table = document.getElementById("invTable");
+    if (!table) return;
+
+    table.querySelectorAll("thead th").forEach((th, colIdx) => {
+      th.addEventListener("click", () => {
+        let dir = "asc";
+        if (table._sortState && table._sortState.col === colIdx) {
+          dir = table._sortState.dir === "asc" ? "desc" : "asc";
+        }
+        sortTable(table, colIdx, dir);
+        table._sortState = { col: colIdx, dir };
+        updateSortIndicators(table, colIdx, dir);
+      });
+    });
+  });
+
+  function sortTable(table, colIdx, dir) {
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows);
+    const type = table.tHead.rows[0].cells[colIdx].dataset.type;
+
+    rows.sort((a,b)=>{
+      let aText = a.cells[colIdx].textContent.trim();
+      let bText = b.cells[colIdx].textContent.trim();
+      if(type==="number"){aText=parseFloat(aText);bText=parseFloat(bText);}
+      else if(type==="date"){aText=new Date(aText);bText=new Date(bText);}
+      if(aText<bText)return dir==="asc"?-1:1;
+      if(aText>bText)return dir==="asc"?1:-1;
+      return 0;
+    });
+
+    rows.forEach(r=>tbody.appendChild(r));
+  }
+
+  function updateSortIndicators(table,colIdx,dir){
+    table.querySelectorAll("thead th").forEach((th,idx)=>{
+      th.textContent=th.textContent.replace(/\s*[▲▼]$/,"");
+      if(idx===colIdx)th.textContent+=dir==="asc"?" ▲":" ▼";
+    });
+  }
+</script>
+
+</body>
+</html>
