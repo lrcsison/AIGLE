@@ -27,7 +27,6 @@ def get_transactions():
             "transaction_type": t.get("transaction_type"),
             "item_name": t.get("item_name"),
             "quantity": t.get("quantity"),
-            "price": t.get("price"),
             "remarks": t.get("remarks"),
             "transaction_date": t.get("transaction_date"),
             "medicine_id": t.get("medicine_id"),

@@ -13,25 +13,22 @@ async function updateTransactions() {
   const type = document.getElementById("asType")?.value || "all";
   const data = await fetchJSON(`/api/transactions?type=${type}`);
   if (!data || !data.length) {
-    renderTable("#transactionsBody", [], "No transactions available", 8);
+    renderTable("#transactionsBody", [], "No transactions available", 6);
     return;
   }
 
   const rows = data.map(t => {
-    const total = (t.price && t.quantity) ? (t.price * t.quantity).toFixed(2) : "0.00";
     return `<tr>
       <td>${t.transaction_type || ""}</td>
       <td>${t.item_name || ""}</td>
       <td>${t.quantity || 0}</td>
-      <td>${parseFloat(t.price || 0).toFixed(2)}</td>
       <td>${t.transaction_date || ""}</td>
-      <td>${total}</td>
       <td>${t.employee_id || ""}</td>
       <td>${t.remarks || ""}</td>
     </tr>`;
   });
 
-  renderTable("#transactionsBody", rows, "No transactions available", 8);
+  renderTable("#transactionsBody", rows, "No transactions available", 6);
 
   const table = document.getElementById("transactionsTable");
   if (table && table._sortState) {
