@@ -78,3 +78,42 @@
 .notification-card .dismiss:hover {
     color: #000;
 }
+
+.notification-card {
+    background: #fff;
+    border-left: 5px solid gray;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.notification-card .title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.notification-card .subtitle {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.notification-card .dismiss {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+}
+
+.notification-card .dismiss:hover {
+    color: #333;
+}
+
+.notification-card.dismissed {
+    opacity: 0;
+    transform: translateX(30px);
+}

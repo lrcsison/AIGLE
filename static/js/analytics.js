@@ -102,7 +102,15 @@ function updateAnalytics() {
   showLoading();
 
   fetch(`/api/usage?${params.toString()}`)
-    .then(res => res.ok ? res.json() : [])
+    .then(async res => {
+      if (!res.ok) {
+        console.error("Usage fetch failed:", await res.text());
+        return [];
+      }
+      const data = await res.json();
+      console.log("Usage data received:", data);
+      return data;
+    })
     .then(updateUsageTables)
     .catch(err => {
       console.error("Usage fetch failed:", err);
@@ -120,28 +128,70 @@ function updateAnalytics() {
 
 function updateUsageTables(data) {
   stopDotAnimation("loading-usage");
+  console.log("Updating usage tables with data:", data);
 
   const mostUsedBody = document.getElementById("most-used-body");
   const leastUsedBody = document.getElementById("least-used-body");
   mostUsedBody.innerHTML = "";
   leastUsedBody.innerHTML = "";
 
-  if (!data || data.length === 0) {
-    mostUsedBody.innerHTML = `<tr><td colspan="2">No usage data available</td></tr>`;
-    leastUsedBody.innerHTML = `<tr><td colspan="2">No usage data available</td></tr>`;
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.log("No usage data available");
+    const noDataMessage = `<tr><td colspan="2">No usage data available</td></tr>`;
+    mostUsedBody.innerHTML = noDataMessage;
+    leastUsedBody.innerHTML = noDataMessage;
     return;
   }
 
-  const sortedData = [...data].sort((a, b) => Math.abs(b.net_usage) - Math.abs(a.net_usage));
-  const mostUsed = sortedData.slice(0, 3);
-  const leastUsed = sortedData.slice(-3).reverse();
+  // Normalize data: ensure net_usage is a number and filter out zero/null usage
+  const validData = data
+    .map(item => ({
+      name: item.name,
+      net_usage: Number(item.net_usage) || 0
+    }))
+    .filter(item => item.net_usage > 0);
 
-  mostUsed.forEach(i => {
-    mostUsedBody.innerHTML += `<tr><td>${i.name}</td><td>${Math.abs(i.net_usage)}</td></tr>`;
+  if (validData.length === 0) {
+    console.log("No medicines with usage > 0");
+    const noDataMessage = `<tr><td colspan="2">No usage recorded</td></tr>`;
+    mostUsedBody.innerHTML = noDataMessage;
+    leastUsedBody.innerHTML = noDataMessage;
+    return;
+  }
+
+  // Sort once by usage (descending)
+  validData.sort((a, b) => b.net_usage - a.net_usage);
+  console.log("Sorted valid data:", validData);
+
+  // Get top 3 for most used
+  const topUsed = validData.slice(0, 3);
+  console.log("Most used medicines:", topUsed);
+
+  // Get bottom 3 for least used (from the end of the sorted array)
+  const bottomUsed = validData.slice(-Math.min(3, validData.length)).reverse();
+  console.log("Least used medicines:", bottomUsed);
+
+  // Render most used
+  topUsed.forEach(item => {
+    mostUsedBody.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>${Math.round(item.net_usage)}</td>
+      </tr>
+    `;
   });
-  leastUsed.forEach(i => {
-    leastUsedBody.innerHTML += `<tr><td>${i.name}</td><td>${Math.abs(i.net_usage)}</td></tr>`;
+
+  // Render least used
+  bottomUsed.forEach(item => {
+    leastUsedBody.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>${Math.round(item.net_usage)}</td>
+      </tr>
+    `;
   });
+
+  console.log("Tables updated successfully");
 }
 
 function updateRecommendationsTable(data) {
@@ -173,9 +223,11 @@ function updateRecommendationsTable(data) {
   const periodSelector = document.getElementById("periodSelector");
   let periodText = "";
 
-  if (period === "yearly") periodText = `Year ${year}`;
-  else if (period === "quarterly") periodText = `${periodSelector.value} ${year}`;
-  else if (period === "monthly") {
+  if (period === "yearly") {
+    periodText = `Year ${year}`;
+  } else if (period === "quarterly") {
+    periodText = `${periodSelector.value} ${year}`;
+  } else if (period === "monthly") {
     const monthLabel = months.find(m => m.value === parseInt(periodSelector.value))?.label;
     periodText = `${monthLabel} ${year}`;
   } else {
@@ -189,18 +241,19 @@ function normalizeStatusClass(status) {
   if (!status) return 'status-unknown';
   const s = String(status).toLowerCase().trim();
   // Map common status text to class names
-  if (s.includes('adequate') || s.includes('ok') || s.includes('in range')) return 'status-adequate';
+  if (s.includes('adequate') || s.includes('ok') || s.includes('optimal')) return 'status-adequate';
   if (s.includes('overstock') || s.includes('excess') || s.includes('too many')) return 'status-overstock';
-  if (s.includes('low')) return 'status-low';
+  if (s.includes('understock') || s.includes('low')) return 'status-understock';
   if (s.includes('out') || s.includes('out of stock')) return 'status-out-of-stock';
-  if (s.includes('expir') || s.includes('expire')) return 'status-expiring';
   return 'status-unknown';
 }
 
-// Initialize
-updateFilterOptions();
-updateAnalytics();
-document.getElementById("period").addEventListener("change", () => {
+// Initialize and set up event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
   updateFilterOptions();
   updateAnalytics();
+  document.getElementById("period").addEventListener("change", () => {
+    updateFilterOptions();
+    updateAnalytics();
+  });
 });

@@ -19,8 +19,11 @@ class MedicineAnalytics:
         if df.empty:
             return df
 
+        # Parse transaction_date robustly (accept various ISO formats)
         if 'transaction_date' in df.columns:
-            df['transaction_date'] = pd.to_datetime(df['transaction_date'], format='ISO8601', errors='coerce')
+            df['transaction_date'] = pd.to_datetime(df['transaction_date'], errors='coerce')
+            # drop rows where date couldn't be parsed
+            df = df.dropna(subset=['transaction_date'])
             df['month'] = df['transaction_date'].dt.month
             df['year'] = df['transaction_date'].dt.year
         else:
@@ -28,8 +31,26 @@ class MedicineAnalytics:
             df['month'] = now.month
             df['year'] = now.year
 
+        # Ensure quantity is numeric
+        if 'quantity' in df.columns:
+            df['quantity'] = pd.to_numeric(df['quantity'], errors='coerce').fillna(0)
+
+        # Normalize transaction_type and filter only 'out' (case-insensitive). If transaction_type missing, assume rows are relevant.
         if 'transaction_type' in df.columns:
-            df = df[df['transaction_type'] == 'out']
+            df['transaction_type'] = df['transaction_type'].astype(str).str.lower().str.strip()
+            # common tokens that indicate an outgoing/usage transaction
+            out_tokens = {'out', 'o', 'dispensed', 'dispense', 'sold', 'sale', 'withdrawal', 'used'}
+            mask_out = df['transaction_type'].isin(out_tokens)
+            if mask_out.any():
+                df = df[mask_out]
+            else:
+                # fallback: if quantities are negative assume negative means out
+                if 'quantity' in df.columns and (df['quantity'] < 0).any():
+                    print("[DEBUG] prepare_data: inferring 'out' from negative quantities")
+                    df.loc[df['quantity'] < 0, 'quantity'] = df.loc[df['quantity'] < 0, 'quantity'].abs()
+                else:
+                    # last resort: assume all rows are relevant (treat as 'out')
+                    print("[DEBUG] prepare_data: no explicit 'out' type found; treating all rows as out")
 
         return df
 
@@ -39,25 +60,61 @@ class MedicineAnalytics:
         if end_date is None:
             end_date = datetime.now()
 
+        print(f"[DEBUG] Fetching transactions for period {period} from {start_date} to {end_date}")
         transactions = get_medicine_transactions(start_date, end_date)
+        print(f"[DEBUG] Found {len(transactions)} raw transactions")
+        
         df = self.prepare_data(transactions)
+        print(f"[DEBUG] After prepare_data: {len(df)} rows")
 
         if df.empty:
+            print("[DEBUG] No transactions after filtering")
             return []
 
         try:
+            # Get current medicine stock for names
             medicines = {m['medicine_id']: m['name'] for m in get_medicine_stock()}
-            usage_stats = df.groupby('medicine_id').agg({'quantity': 'sum'}).reset_index()
+            print(f"[DEBUG] Found {len(medicines)} medicines in stock")
+
+            # For transaction types that indicate outgoing/usage
+            out_indicators = {'out', 'o', 'dispensed', 'dispense', 'sold', 'sale', 'withdrawal', 'used'}
+            
+            # Handle transaction types more flexibly
+            if 'transaction_type' in df.columns:
+                df['transaction_type'] = df['transaction_type'].astype(str).str.lower().str.strip()
+                # Mark transactions as outgoing if they match any out indicator
+                is_out = df['transaction_type'].str.contains('|'.join(out_indicators), na=False)
+                # Also consider negative quantities as outgoing
+                is_negative = df['quantity'] < 0
+                df['is_outgoing'] = is_out | is_negative
+                # Convert negative quantities to positive for outgoing transactions
+                df.loc[is_negative, 'quantity'] = df.loc[is_negative, 'quantity'].abs()
+            else:
+                # If no transaction type, assume all transactions are relevant
+                df['is_outgoing'] = True
+
+            # Sum quantities by medicine, considering only outgoing transactions
+            usage_stats = df[df['is_outgoing']].groupby('medicine_id').agg({
+                'quantity': 'sum'
+            }).reset_index()
+            
+            print(f"[DEBUG] Generated usage stats for {len(usage_stats)} medicines")
 
             result = []
             for _, row in usage_stats.iterrows():
                 medicine_id = row['medicine_id']
-                result.append({
-                    'name': medicines.get(medicine_id, f'Medicine {medicine_id}'),
-                    'net_usage': int(row['quantity'])
-                })
+                total_usage = int(row['quantity'])  # Already ensured positive by earlier logic
+                if total_usage > 0:  # Only include medicines that were actually used
+                    result.append({
+                        'name': medicines.get(medicine_id, f'Medicine {medicine_id}'),
+                        'net_usage': total_usage
+                    })
 
+            # Sort by usage (highest to lowest)
             result.sort(key=lambda x: x['net_usage'], reverse=True)
+            print(f"[DEBUG] Final result contains {len(result)} medicines")
+            if result:
+                print("[DEBUG] Sample result:", result[0])
             return result
 
         except Exception as e:
@@ -107,10 +164,15 @@ class MedicineAnalytics:
                 name = medicine.get('name', f'Medicine {medicine_id}')
                 current_quantity = medicine.get('quantity', 0)
 
+
                 forecast = self.forecast_stock(medicine_id)
                 forecast_usage = np.mean(forecast['predicted_quantity']) if forecast['predicted_quantity'] else current_quantity * 0.8
 
-                if current_quantity > forecast_usage * 1.5:
+                # Explicit out-of-stock check
+                if current_quantity == 0:
+                    action = "Replenish stock immediately"
+                    status = "Out of Stock"
+                elif current_quantity > forecast_usage * 1.5:
                     action = f"Reduce by ~{int(current_quantity - forecast_usage)} units if possible"
                     status = "Overstock"
                 elif current_quantity < forecast_usage * 0.8:

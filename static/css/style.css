@@ -388,8 +388,8 @@ footer {
 .chart-container-sales {
   width: 100%;
   max-width: 100%;
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 470px;
   overflow: hidden;
   background: var(--foam);
   border-radius: 15px;
@@ -884,4 +884,70 @@ table.info-main[data-mode="view"] thead {
   background-color: var(--coffee);
   box-shadow: none;
   transition: all 0.3s ease-in-out;
+}
+
+
+.donut-inner {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* ✅ prevents inner content from spilling */
+
+}
+
+.donut-inner canvas {
+  flex: 0 0 240px;
+  max-height: 240px;
+}
+
+.donut-legend-js {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 140px;
+  margin-top: 10px;
+  font-size: 14px;
+  padding-right: 4px;
+}
+
+/* Wrapper allows horizontal scroll */
+#topSalesTable-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;   /* horizontal scroll */
+  overflow-y: auto;   /* vertical scroll if table tall */
+  padding-bottom: 5px; /* spacing for scrollbar */
+}
+
+/* Table styling */
+#topSalesTable {
+  table-layout: fixed;   /* fixes column widths */
+  min-width: 400px;      /* ensures table can scroll if small container */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Cells */
+#topSalesTable th,
+#topSalesTable td {
+  padding: 10px 12px;
+  max-width: 140px;        /* adjust column width */
+  overflow: hidden;
+  text-overflow: ellipsis; /* truncate overflowing text */
+  white-space: nowrap;      /* prevents wrapping */
+}
+
+/* Sticky header */
+#topSalesTable thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--coffee);
+  color: var(--foam);
+  z-index: 5;
+}
+
+@media (max-width: 1200px) {
+  .sales-toprev {
+    grid-template-columns: 1fr; /* stack chart & table on smaller screens */
+    gap: 20px;
+  }
 }
