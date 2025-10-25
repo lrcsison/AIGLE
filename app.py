@@ -152,9 +152,9 @@ def faq_page():
     # public FAQ page — no login required
     return render_template("faq.html")
 
-#if __name__ == "__main__" and os.environ.get("FLASK_ENV") == "development":
- #   port = int(os.environ.get("PORT", 10000))
-  #  app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == "__main__" and os.environ.get("FLASK_ENV") == "development":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=True)
 
 if __name__ == "__main__": 
     app.run(debug=True, port=5050)
